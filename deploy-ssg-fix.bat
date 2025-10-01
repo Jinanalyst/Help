@@ -1,0 +1,9 @@
+@echo off
+echo Adding all SSG fixes...
+git add .
+echo Committing changes...
+git commit -m "fix: stop SSG hitting dynamic APIs; force-dynamic and no-store on route handlers; switch to direct server imports; add SUPABASE_JWT_SECRET docs"
+echo Pushing to GitHub...
+git push origin main
+echo Done! Vercel should now build successfully without SSG issues.
+pause

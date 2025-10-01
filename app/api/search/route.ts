@@ -1,30 +1,11 @@
+// Force dynamic rendering to prevent SSG issues
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+export const fetchCache = 'force-no-store'
+export const runtime = 'nodejs'
+
 import { NextRequest, NextResponse } from 'next/server'
-import { getSearchProvider } from '@/lib/search-providers'
-
-const STOP_WORDS = new Set(['about','after','against','among','because','being','could','first','other','their','there','these','those','where','which','while','whose','would','should','might','using','based','within','between','around'])
-
-function extractTerms(results: any[], query: string, max = 6) {
-  const words = new Map<string, number>()
-
-  results.forEach(result => {
-    const text = `${result.title ?? ''} ${result.snippet ?? ''}`.toLowerCase()
-    text
-      .replace(/[^a-z0-9\s]/g, ' ')
-      .split(/\s+/)
-      .filter(Boolean)
-      .forEach(word => {
-        if (word.length < 4) return
-        if (STOP_WORDS.has(word)) return
-        if (query.toLowerCase().includes(word)) return
-        words.set(word, (words.get(word) ?? 0) + 1)
-      })
-  })
-
-  return Array.from(words.entries())
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, max)
-    .map(([word]) => `${query} ${word}`)
-}
+import { searchEverything } from '@/lib/server/search'
 
 export async function GET(request: NextRequest) {
   try {
@@ -40,27 +21,8 @@ export async function GET(request: NextRequest) {
       }, { status: 400 })
     }
 
-    const provider = getSearchProvider()
-    const results = await provider.search(query, { limit })
-
-    const followUps = extractTerms(results, query, 6)
-    if (followUps.length < 3) {
-      const fallbacks = [
-        `How does ${query} work?`,
-        `Best resources for ${query}`,
-        `${query} vs alternatives`,
-        `${query} tips and tricks`
-      ]
-      followUps.push(...fallbacks.slice(0, 6 - followUps.length))
-    }
-
-    return NextResponse.json({
-      query,
-      provider: provider.name,
-      count: results.length,
-      followUps: followUps.slice(0, 6),
-      results: results.slice(0, limit)
-    })
+    const data = await searchEverything(query, limit)
+    return NextResponse.json(data)
   } catch (error) {
     console.error('Search API error:', error)
     return NextResponse.json({ 
