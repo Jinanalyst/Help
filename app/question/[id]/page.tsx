@@ -55,10 +55,10 @@ export default function QuestionDetailPage() {
     fetchAnswers()
   }, [questionId, answerSort])
 
-  const handleAnswerSubmit = async (content: string) => {
+  const handleAnswerSubmit = async (content: string): Promise<boolean> => {
     if (!userId) {
       router.push(`/login?returnUrl=/question/${questionId}`)
-      return
+      return false
     }
 
     try {
@@ -73,10 +73,11 @@ export default function QuestionDetailPage() {
         setAnswers(prev => [data.answer, ...prev])
         return true
       }
+      return false
     } catch (error) {
       console.error('Failed to submit answer:', error)
+      return false
     }
-    return false
   }
 
   if (loading) {
