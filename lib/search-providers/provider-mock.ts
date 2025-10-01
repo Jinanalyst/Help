@@ -69,3 +69,4 @@ export class MockSearchProvider implements SearchProvider {
     return mockResults.slice(0, limit)
   }
 }
+

@@ -1,0 +1,45 @@
+{
+  "sections": [
+    {
+      "label": "Academics",
+      "icon": "📚",
+      "categories": [
+        {"name": "Math", "href": "/help/math"},
+        {"name": "English", "href": "/help/english"},
+        {"name": "Korean", "href": "/help/korean"},
+        {"name": "Science", "href": "/help/science"},
+        {"name": "Social/History", "href": "/help/history"}
+      ]
+    },
+    {
+      "label": "Tech",
+      "icon": "💻",
+      "categories": [
+        {"name": "Coding", "href": "/help/coding"},
+        {"name": "Security", "href": "/help/security"},
+        {"name": "Data & AI", "href": "/help/ai"},
+        {"name": "Design/Media", "href": "/help/design"}
+      ]
+    },
+    {
+      "label": "Practical",
+      "icon": "🌐",
+      "categories": [
+        {"name": "Languages", "href": "/help/langs"},
+        {"name": "Finance/Econ", "href": "/help/finance"},
+        {"name": "Law/Admin", "href": "/help/law"},
+        {"name": "Health", "href": "/help/health"}
+      ]
+    },
+    {
+      "label": "Growth",
+      "icon": "🎯",
+      "categories": [
+        {"name": "Career", "href": "/help/career"},
+        {"name": "Mindset", "href": "/help/mind"},
+        {"name": "Writing/Comm", "href": "/help/writing"},
+        {"name": "Projects/Startup", "href": "/help/startup"}
+      ]
+    }
+  ]
+}

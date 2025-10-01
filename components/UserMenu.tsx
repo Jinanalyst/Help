@@ -108,3 +108,4 @@ export default function UserMenu({ user, onClose, onSignOut }: UserMenuProps) {
     </div>
   )
 }
+

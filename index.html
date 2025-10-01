@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>App Launcher Demo</title>
+  <link rel="stylesheet" href="components/AppLauncher/app-launcher.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #eef2ff, #f8fafc);
+    }
+    header.topbar {
+      position: sticky;
+      top: 0;
+      display: flex;
+      align-items: center;
+      padding: 12px clamp(16px, 4vw, 32px);
+      background: rgba(255,255,255,0.92);
+      border-bottom: 1px solid rgba(15,23,42,0.08);
+      backdrop-filter: blur(10px);
+    }
+    .brand { font-weight: 600; }
+    .spacer { flex: 1; }
+    main {
+      padding: 96px clamp(16px, 6vw, 120px);
+      color: #1f2937;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">HELP Platform</div>
+    <div class="spacer"></div>
+    <button id="appLauncherBtn" aria-haspopup="menu" aria-expanded="false" aria-label="Open HELP menu" class="apps-trigger-button">
+      <span class="apps-dots" aria-hidden="true">
+        <i></i><i></i><i></i>
+        <i></i><i></i><i></i>
+        <i></i><i></i><i></i>
+      </span>
+    </button>
+  </header>
+  <main>
+    <h1>App Launcher Demo</h1>
+    <p>Click the 9-dot icon in the top-right corner to open the launcher.</p>
+  </main>
+
+  <script type="module">
+    import { AppLauncher } from './components/AppLauncher/app-launcher.ts'
+    import data from './components/AppLauncher/data.json' assert { type: 'json' }
+
+    const trigger = document.getElementById('appLauncherBtn')!
+    const launcher = new AppLauncher(trigger, { data })
+    window.launcher = launcher
+  </script>
+</body>
+</html>

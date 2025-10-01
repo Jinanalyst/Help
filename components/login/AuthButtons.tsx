@@ -21,9 +21,11 @@ export default function AuthButtons() {
     }
     setLoading(true)
     try {
+      const params = new URLSearchParams(window.location.search)
+      const returnUrl = params.get('returnUrl') || '/account'
       await supabase.auth.signInWithOAuth({
         provider,
-        options: { redirectTo: `${origin}/account` },
+        options: { redirectTo: `${origin}${returnUrl}` },
       })
     } catch (e) {
       setError('Sign-in failed. Please try again.')
@@ -46,9 +48,11 @@ export default function AuthButtons() {
     }
     setLoading(true)
     try {
+      const params = new URLSearchParams(window.location.search)
+      const returnUrl = params.get('returnUrl') || '/account'
       const { error } = await supabase.auth.signInWithOtp({
         email,
-        options: { emailRedirectTo: `${origin}/account` },
+        options: { emailRedirectTo: `${origin}${returnUrl}` },
       })
       if (error) throw error
       setMessage('Check your email for a sign-in link.')
@@ -111,5 +115,6 @@ export default function AuthButtons() {
     </div>
   )
 }
+
 
 

@@ -260,3 +260,4 @@ export class CustomSearchProvider implements SearchProvider {
 4. **Monitor usage** to avoid exceeding rate limits
 5. **Test with mock provider** before using real APIs
 6. **Log search queries** for analytics and improvement
+
