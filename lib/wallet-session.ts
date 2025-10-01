@@ -5,14 +5,20 @@ const COOKIE = 'wallet_session'
 const MAX_AGE = 60 * 60 * 24 * 7 // 7 days
 
 export function signWalletJwt(address: string) {
-  const secret = process.env.WALLET_JWT_SECRET!
+  const secret = process.env.WALLET_JWT_SECRET
+  if (!secret) {
+    throw new Error('WALLET_JWT_SECRET is not set')
+  }
   return jwt.sign({ sub: address.toLowerCase() }, secret, { expiresIn: MAX_AGE })
 }
 
 export function verifyWalletJwt(token?: string) {
   try {
     if (!token) return null
-    const secret = process.env.WALLET_JWT_SECRET!
+    const secret = process.env.WALLET_JWT_SECRET
+    if (!secret) {
+      throw new Error('WALLET_JWT_SECRET is not set')
+    }
     const decoded = jwt.verify(token, secret) as { sub: string }
     return decoded?.sub ?? null
   } catch {
