@@ -1,4 +1,3 @@
-// Re-export for convenience
+// Only re-export client - server must be imported directly
 export { createClient } from './client'
-export { createServerSupabaseClient } from './server'
 

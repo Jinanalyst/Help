@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { createServerSupabaseClient } from '@/lib/supabase'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
 import AppsGrid from '@/components/AppsGrid'
 import AvatarMenu from '@/components/AvatarMenu'
 import { cookies } from 'next/headers'
