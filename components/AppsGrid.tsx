@@ -3,7 +3,9 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 
-interface AppsGridProps {}
+interface AppsGridProps {
+  onClose?: () => void
+}
 
 interface AppLink {
   name: string
@@ -70,21 +72,29 @@ const apps: AppLink[] = [
   
 ]
 
-export default function AppsGrid({}: AppsGridProps) {
+export default function AppsGrid({ onClose }: AppsGridProps) {
   const panelRef = useRef<HTMLDivElement>(null)
   const [open, setOpen] = useState(false)
 
+  const handleClose = () => {
+    setOpen(false)
+    if (onClose) onClose()
+  }
+
   useEffect(() => {
+    if (!open) return
+
     const handleClickOutside = (event: MouseEvent) => {
-      if (!open) return
       if (panelRef.current && !panelRef.current.contains(event.target as Node)) {
         setOpen(false)
+        if (onClose) onClose()
       }
     }
 
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setOpen(false)
+        if (onClose) onClose()
       }
     }
 
@@ -95,7 +105,7 @@ export default function AppsGrid({}: AppsGridProps) {
       document.removeEventListener('mousedown', handleClickOutside)
       document.removeEventListener('keydown', handleEscape)
     }
-  }, [open])
+  }, [open, onClose])
 
   return (
     <div className="apps-root" ref={panelRef}>
@@ -119,7 +129,7 @@ export default function AppsGrid({}: AppsGridProps) {
                 key={app.name}
                 href={app.url}
                 className="app-item"
-                onClick={() => setOpen(false)}
+                onClick={handleClose}
                 title={app.description}
                 role="menuitem"
               >
