@@ -13,7 +13,9 @@
     "react": "^18",
     "react-dom": "^18",
     "@supabase/supabase-js": "^2.38.0",
-    "@supabase/ssr": "^0.0.10"
+    "@supabase/ssr": "^0.0.10",
+    "siwe": "^2.3.2",
+    "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
     "typescript": "^5",

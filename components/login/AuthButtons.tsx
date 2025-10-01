@@ -13,7 +13,7 @@ export default function AuthButtons() {
 
   const origin = typeof window !== 'undefined' ? window.location.origin : ''
 
-  const handleOAuth = async (provider: 'google' | 'github') => {
+  const handleOAuth = async (provider: 'google' | 'github' | 'linkedin_oidc') => {
     setError('')
     if (!checkAuthRateLimit(`${provider}-signin`, 5, 60000)) {
       setError('Too many attempts. Please try again in a minute.')
@@ -29,6 +29,65 @@ export default function AuthButtons() {
       })
     } catch (e) {
       setError('Sign-in failed. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // SIWE Wallet login (MetaMask / EIP-1193)
+  const handleWalletLogin = async () => {
+    try {
+      setError('')
+      setLoading(true)
+      const eth = (window as any).ethereum
+      if (!eth) {
+        setError('No wallet found. Please install MetaMask.')
+        return
+      }
+
+      const nonceRes = await fetch('/api/siwe/nonce')
+      const { nonce } = await nonceRes.json()
+
+      const accounts: string[] = await eth.request({ method: 'eth_requestAccounts' })
+      const address = accounts[0]
+      const chainIdHex: string = await eth.request({ method: 'eth_chainId' })
+      const chainId = parseInt(chainIdHex, 16)
+
+      const domain = window.location.host
+      const uri = window.location.origin
+      const message = [
+        `${domain} wants you to sign in with your Ethereum account:`,
+        `${address}`,
+        '',
+        `URI: ${uri}`,
+        `Version: 1`,
+        `Chain ID: ${chainId}`,
+        `Nonce: ${nonce}`,
+        `Issued At: ${new Date().toISOString()}`,
+      ].join('\n')
+
+      const signature = await eth.request({
+        method: 'personal_sign',
+        params: [message, address],
+      })
+
+      const verify = await fetch('/api/siwe/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message, signature }),
+      })
+
+      if (!verify.ok) {
+        const { error } = await verify.json().catch(() => ({ error: 'Wallet sign-in failed' }))
+        setError(error || 'Wallet sign-in failed')
+        return
+      }
+
+      const params = new URLSearchParams(window.location.search)
+      const returnUrl = params.get('returnUrl') || '/account'
+      window.location.href = returnUrl
+    } catch (e) {
+      setError('Wallet sign-in failed. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -82,6 +141,20 @@ export default function AuthButtons() {
           disabled={loading}
         >
           Continue with GitHub
+        </button>
+        <button
+          className="auth-button auth-button-linkedin"
+          onClick={() => handleOAuth('linkedin_oidc')}
+          disabled={loading}
+        >
+          Continue with LinkedIn
+        </button>
+        <button
+          className="auth-button auth-button-wallet"
+          onClick={handleWalletLogin}
+          disabled={loading}
+        >
+          Connect Wallet
         </button>
       </div>
 
