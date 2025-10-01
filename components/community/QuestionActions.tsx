@@ -23,12 +23,12 @@ export default function QuestionActions({
   initialDownvoted = false,
   onAuthRequired
 }: QuestionActionsProps) {
-  const [liked, setLiked] = useState(initialLiked)
-  const [bookmarked, setBookmarked] = useState(initialBookmarked)
-  const [upvoted, setUpvoted] = useState(initialUpvoted)
-  const [downvoted, setDownvoted] = useState(initialDownvoted)
-  const [voteScore, setVoteScore] = useState(initialVoteScore)
-  const [following, setFollowing] = useState(false)
+  const [liked, setLiked] = useState<boolean>(initialLiked)
+  const [bookmarked, setBookmarked] = useState<boolean>(initialBookmarked)
+  const [upvoted, setUpvoted] = useState<boolean>(initialUpvoted)
+  const [downvoted, setDownvoted] = useState<boolean>(initialDownvoted)
+  const [voteScore, setVoteScore] = useState<number>(initialVoteScore)
+  const [following, setFollowing] = useState<boolean>(false)
 
   const handleLike = async () => {
     if (!userId) {
@@ -80,20 +80,20 @@ export default function QuestionActions({
     if (type === 'up') {
       if (upvoted) {
         setUpvoted(false)
-        setVoteScore(prev => prev - 1)
+        setVoteScore((prev: number) => prev - 1)
       } else {
         setUpvoted(true)
         setDownvoted(false)
-        setVoteScore(prev => prev + (downvoted ? 2 : 1))
+        setVoteScore((prev: number) => prev + (downvoted ? 2 : 1))
       }
     } else {
       if (downvoted) {
         setDownvoted(false)
-        setVoteScore(prev => prev + 1)
+        setVoteScore((prev: number) => prev + 1)
       } else {
         setDownvoted(true)
         setUpvoted(false)
-        setVoteScore(prev => prev - (upvoted ? 2 : 1))
+        setVoteScore((prev: number) => prev - (upvoted ? 2 : 1))
       }
     }
 

@@ -12,12 +12,12 @@ interface QuestionCardProps {
 
 export default function QuestionCard({ question, userId, onAction }: QuestionCardProps) {
   const router = useRouter()
-  const [liked, setLiked] = useState(question.user_liked || false)
-  const [likeCount, setLikeCount] = useState(question.like_count || 0)
-  const [bookmarked, setBookmarked] = useState(question.user_bookmarked || false)
-  const [upvoted, setUpvoted] = useState(question.user_upvoted || false)
-  const [downvoted, setDownvoted] = useState(question.user_downvoted || false)
-  const [voteScore, setVoteScore] = useState(question.vote_score || 0)
+  const [liked, setLiked] = useState<boolean>(question.user_liked || false)
+  const [likeCount, setLikeCount] = useState<number>(question.like_count || 0)
+  const [bookmarked, setBookmarked] = useState<boolean>(question.user_bookmarked || false)
+  const [upvoted, setUpvoted] = useState<boolean>(question.user_upvoted || false)
+  const [downvoted, setDownvoted] = useState<boolean>(question.user_downvoted || false)
+  const [voteScore, setVoteScore] = useState<number>(question.vote_score || 0)
 
   const handleLike = async (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -28,7 +28,7 @@ export default function QuestionCard({ question, userId, onAction }: QuestionCar
 
     // Optimistic update
     setLiked(!liked)
-    setLikeCount(prev => liked ? prev - 1 : prev + 1)
+    setLikeCount((prev: number) => liked ? prev - 1 : prev + 1)
 
     try {
       await fetch(`/api/community/questions/${question.id}/like`, {
@@ -57,20 +57,20 @@ export default function QuestionCard({ question, userId, onAction }: QuestionCar
     if (type === 'up') {
       if (upvoted) {
         setUpvoted(false)
-        setVoteScore(prev => prev - 1)
+        setVoteScore((prev: number) => prev - 1)
       } else {
         setUpvoted(true)
         setDownvoted(false)
-        setVoteScore(prev => prev + (downvoted ? 2 : 1))
+        setVoteScore((prev: number) => prev + (downvoted ? 2 : 1))
       }
     } else {
       if (downvoted) {
         setDownvoted(false)
-        setVoteScore(prev => prev + 1)
+        setVoteScore((prev: number) => prev + 1)
       } else {
         setDownvoted(true)
         setUpvoted(false)
-        setVoteScore(prev => prev - (upvoted ? 2 : 1))
+        setVoteScore((prev: number) => prev - (upvoted ? 2 : 1))
       }
     }
 

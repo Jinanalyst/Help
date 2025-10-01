@@ -10,12 +10,12 @@ interface AnswerCardProps {
 }
 
 export default function AnswerCard({ answer, questionId, userId, onAuthRequired }: AnswerCardProps) {
-  const [upvoted, setUpvoted] = useState(answer.user_upvoted || false)
-  const [downvoted, setDownvoted] = useState(answer.user_downvoted || false)
-  const [voteScore, setVoteScore] = useState(answer.vote_score || 0)
-  const [showComments, setShowComments] = useState(false)
-  const [comments, setComments] = useState(answer.comments || [])
-  const [commentText, setCommentText] = useState('')
+  const [upvoted, setUpvoted] = useState<boolean>(answer.user_upvoted || false)
+  const [downvoted, setDownvoted] = useState<boolean>(answer.user_downvoted || false)
+  const [voteScore, setVoteScore] = useState<number>(answer.vote_score || 0)
+  const [showComments, setShowComments] = useState<boolean>(false)
+  const [comments, setComments] = useState<any[]>(answer.comments || [])
+  const [commentText, setCommentText] = useState<string>('')
 
   const handleVote = async (type: 'up' | 'down') => {
     if (!userId) {
@@ -29,20 +29,20 @@ export default function AnswerCard({ answer, questionId, userId, onAuthRequired 
     if (type === 'up') {
       if (upvoted) {
         setUpvoted(false)
-        setVoteScore(prev => prev - 1)
+        setVoteScore((prev: number) => prev - 1)
       } else {
         setUpvoted(true)
         setDownvoted(false)
-        setVoteScore(prev => prev + (downvoted ? 2 : 1))
+        setVoteScore((prev: number) => prev + (downvoted ? 2 : 1))
       }
     } else {
       if (downvoted) {
         setDownvoted(false)
-        setVoteScore(prev => prev + 1)
+        setVoteScore((prev: number) => prev + 1)
       } else {
         setDownvoted(true)
         setUpvoted(false)
-        setVoteScore(prev => prev - (upvoted ? 2 : 1))
+        setVoteScore((prev: number) => prev - (upvoted ? 2 : 1))
       }
     }
 
