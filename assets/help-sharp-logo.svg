@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="500" height="150" viewBox="0 0 500 150" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style><![CDATA[
+      .logo-text {
+        font-family: 'Arial Black', Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+        font-weight: 900;
+        font-size: 100px;
+        fill: black;
+        font-style: italic;
+      }
+    ]]></style>
+  </defs>
+  <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" class="logo-text">
+    HELP
+  </text>
+</svg>

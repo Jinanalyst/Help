@@ -1,0 +1,155 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Arial', sans-serif;
+  background-color: #ffffff;
+  color: #333;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+/* Main container */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  max-width: 600px;
+  width: 100%;
+  padding: 20px;
+}
+
+/* Logo styling */
+.logo-container {
+  margin-bottom: 30px;
+}
+
+.logo {
+  width: 200px;
+  height: auto;
+  max-width: 100%;
+}
+
+/* Search container */
+.search-container {
+  width: 100%;
+  max-width: 500px;
+  margin-bottom: 20px;
+}
+
+.search-form {
+  width: 100%;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  border: 1px solid #dfe1e5;
+  border-radius: 24px;
+  padding: 0 16px;
+  background-color: #fff;
+  box-shadow: 0 2px 5px 1px rgba(64,60,67,.16);
+  transition: box-shadow 0.2s ease;
+  width: 100%;
+}
+
+.search-box:hover {
+  box-shadow: 0 2px 8px 1px rgba(64,60,67,.24);
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 12px 16px;
+  font-size: 16px;
+  background: transparent;
+  color: #333;
+}
+
+.search-input::placeholder {
+  color: #9aa0a6;
+}
+
+.search-button {
+  background-color: #4285f4;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-left: 8px;
+}
+
+.search-button:hover {
+  background-color: #3367d6;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .container {
+    padding: 10px;
+  }
+  
+  .logo {
+    width: 150px;
+  }
+  
+  .search-box {
+    flex-direction: column;
+    padding: 8px;
+  }
+  
+  .search-input {
+    padding: 10px 12px;
+    margin-bottom: 8px;
+  }
+  
+  .search-button {
+    margin-left: 0;
+    width: 100%;
+  }
+}

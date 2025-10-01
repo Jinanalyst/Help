@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help - Help People With Your Knowledge</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="Help-Home.css">
+    <link rel="stylesheet" href="styles/header.css">
+</head>
+<body>
+    <header class="top-header">
+        <a href="/" class="header-logo" aria-label="Help home">
+            <img src="/assets/help-sharp-logo.svg" alt="Help" />
+        </a>
+        <div class="header-spacer"></div>
+        <div class="header-actions">
+            <div class="apps-root" id="appsRoot">
+                <button class="apps-trigger" id="appsTrigger" aria-label="Apps" aria-expanded="false">
+                    <span class="apps-dots" aria-hidden="true">
+                        <i></i><i></i><i></i>
+                        <i></i><i></i><i></i>
+                        <i></i><i></i><i></i>
+                    </span>
+                </button>
+                <div class="apps-grid-panel" id="appsPanel" role="dialog" aria-label="Help apps">
+                    <div class="apps-grid" role="menu">
+                        <a href="/" class="app-item" role="menuitem">🏠<span>Home</span></a>
+                        <a href="/search" class="app-item" role="menuitem">🔍<span>Search</span></a>
+                        <a href="/community" class="app-item" role="menuitem">👥<span>Community</span></a>
+                        <a href="/ask" class="app-item" role="menuitem">❓<span>Ask</span></a>
+                        <a href="/account" class="app-item" role="menuitem">👤<span>Profile</span></a>
+                        <a href="/settings" class="app-item" role="menuitem">⚙️<span>Settings</span></a>
+                    </div>
+                </div>
+            </div>
+            <div id="avatarMount"></div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="logo-container" aria-hidden="true">
+            <img src="/assets/help-sharp-logo.svg" alt="" class="logo" />
+        </div>
+        <h1 class="hero-title">Find and share knowledge to help others</h1>
+        <p class="hero-subtitle">Search the web, explore trusted answers, and contribute your expertise.</p>
+
+        <div class="search-container" role="search">
+            <form class="search-form" id="searchForm" action="/search" method="get">
+                <div class="search-box">
+                    <input type="text" name="q" id="searchInput" placeholder="Search for help..." class="search-input" autocomplete="off" aria-label="Search" required>
+                    <button type="submit" class="search-button">Search</button>
+                </div>
+            </form>
+            <div class="suggestions-panel" id="suggestions" role="listbox" aria-label="Search suggestions"></div>
+        </div>
+
+        <section class="cta-section">
+            <button id="openAsk" class="cta-button">Ask a question</button>
+            <a href="/login" class="cta-link" id="accountLink">Sign in to share knowledge</a>
+        </section>
+    </main>
+
+    <dialog id="askDialog" class="ask-dialog">
+        <form method="dialog" id="askForm" class="ask-form">
+            <h2>Ask the community</h2>
+            <label>
+                <span>Title</span>
+                <input type="text" id="askTitle" required>
+            </label>
+            <label>
+                <span>Details</span>
+                <textarea id="askBody" rows="4" placeholder="Explain what you need help with (optional)"></textarea>
+            </label>
+            <label>
+                <span>Tags</span>
+                <input type="text" id="askTags" placeholder="Comma separated tags">
+            </label>
+            <div class="dialog-actions">
+                <button type="reset">Cancel</button>
+                <button type="submit" class="primary">Post question</button>
+            </div>
+        </form>
+    </dialog>
+
+    <script type="module">
+        const supabaseConfig = { url: '', anonKey: '' }
+
+        async function loadSupabaseConfig() {
+            try {
+                const res = await fetch('/api/auth/config')
+                if (!res.ok) return
+                const data = await res.json()
+                supabaseConfig.url = data.url
+                supabaseConfig.anonKey = data.anonKey
+            } catch (err) {
+                console.error('Failed to load Supabase config', err)
+            }
+        }
+
+        async function initSupabase() {
+            if (!supabaseConfig.url || !supabaseConfig.anonKey) return null
+            const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2')
+            return createClient(supabaseConfig.url, supabaseConfig.anonKey)
+        }
+
+        function getInitial(name, email) {
+            if (name) {
+                const parts = name.trim().split(' ')
+                if (parts.length > 1) {
+                    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+                }
+                return name.slice(0, 2).toUpperCase()
+            }
+            if (email) return email.slice(0, 2).toUpperCase()
+            return '?'
+        }
+
+        async function renderAvatar() {
+            const mount = document.getElementById('avatarMount')
+            mount.innerHTML = '<a href="/login" class="header-signin-btn">Sign in</a>'
+
+            await loadSupabaseConfig()
+            const supabase = await initSupabase()
+            if (!supabase) return
+
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!user) return
+
+            const btn = document.createElement('button')
+            btn.className = 'header-avatar-btn'
+            btn.setAttribute('aria-expanded', 'false')
+            btn.innerHTML = user.user_metadata?.avatar_url
+                ? `<img src="${user.user_metadata.avatar_url}" alt="${user.user_metadata.full_name || 'Account'}" class="avatar-image"/>`
+                : `<div class="avatar-initials">${getInitial(user.user_metadata?.full_name, user.email)}</div>`
+
+            const panel = document.createElement('div')
+            panel.className = 'user-menu-panel'
+            panel.setAttribute('role', 'menu')
+            panel.style.display = 'none'
+            panel.innerHTML = `
+              <div class="user-menu-header">
+                <div class="user-menu-avatar">
+                  ${user.user_metadata?.avatar_url
+                    ? `<img src="${user.user_metadata.avatar_url}" alt=""/>`
+                    : `<div class="user-menu-initials">${getInitial(user.user_metadata?.full_name, user.email)}</div>`}
+                </div>
+                <div class="user-menu-info">
+                  <div class="user-menu-name">${user.user_metadata?.full_name || 'Your account'}</div>
+                  <div class="user-menu-email">${user.email}</div>
+                </div>
+              </div>
+              <div class="user-menu-divider"></div>
+              <div class="user-menu-items">
+                <a href="/account" class="user-menu-item" role="menuitem">Profile</a>
+                <a href="/settings" class="user-menu-item" role="menuitem">Settings</a>
+              </div>
+              <div class="user-menu-divider"></div>
+              <div class="user-menu-items">
+                <button class="user-menu-item" id="signOutBtn">Sign out</button>
+              </div>
+            `
+
+            btn.addEventListener('click', () => {
+                const open = panel.style.display === 'block'
+                panel.style.display = open ? 'none' : 'block'
+                btn.setAttribute('aria-expanded', String(!open))
+            })
+
+            document.addEventListener('click', (e) => {
+                if (!panel.contains(e.target) && e.target !== btn) {
+                    panel.style.display = 'none'
+                    btn.setAttribute('aria-expanded', 'false')
+                }
+            })
+
+            panel.querySelector('#signOutBtn').addEventListener('click', async () => {
+                await supabase.auth.signOut()
+                window.location.reload()
+            })
+
+            mount.innerHTML = ''
+            mount.appendChild(btn)
+            mount.appendChild(panel)
+
+            const accountLink = document.getElementById('accountLink')
+            accountLink.textContent = 'View your account'
+            accountLink.href = '/account'
+        }
+
+        function initAppsGrid() {
+            const trigger = document.getElementById('appsTrigger')
+            const panel = document.getElementById('appsPanel')
+            trigger.addEventListener('click', () => {
+                const open = !panel.classList.contains('open')
+                panel.classList.toggle('open', open)
+                panel.style.display = open ? 'block' : 'none'
+                trigger.setAttribute('aria-expanded', String(open))
+            })
+            document.addEventListener('click', (e) => {
+                if (!panel.contains(e.target) && e.target !== trigger) {
+                    panel.classList.remove('open')
+                    panel.style.display = 'none'
+                    trigger.setAttribute('aria-expanded', 'false')
+                }
+            }, { capture: true })
+        }
+
+        async function fetchSuggestions(query) {
+            try {
+                const res = await fetch(`/api/search?q=${encodeURIComponent(query)}&preview=1`)
+                if (!res.ok) return []
+                const data = await res.json()
+                return data.results.map(r => ({ title: r.title, source: r.source }))
+            } catch (err) {
+                console.error('Suggestion fetch failed', err)
+                return []
+            }
+        }
+
+        function initSearch() {
+            const input = document.getElementById('searchInput')
+            const panel = document.getElementById('suggestions')
+            const form = document.getElementById('searchForm')
+            let timer
+
+            input.addEventListener('input', () => {
+                clearTimeout(timer)
+                const value = input.value.trim()
+                if (value.length < 2) {
+                    panel.innerHTML = ''
+                    panel.style.display = 'none'
+                    return
+                }
+                timer = setTimeout(async () => {
+                    const suggestions = await fetchSuggestions(value)
+                    if (!suggestions.length) {
+                        panel.style.display = 'none'
+                        return
+                    }
+                    panel.innerHTML = suggestions.map(item => `
+                        <button type="button" class="suggestion-item">
+                            <span>${item.title}</span>
+                            ${item.source ? `<span class="suggestion-domain">${item.source}</span>` : ''}
+                        </button>
+                    `).join('')
+                    Array.from(panel.querySelectorAll('button')).forEach((btn, idx) => {
+                        btn.addEventListener('click', () => {
+                            input.value = suggestions[idx].title
+                            form.requestSubmit()
+                        })
+                    })
+                    panel.style.display = 'block'
+                }, 250)
+            })
+
+            document.addEventListener('click', (e) => {
+                if (!panel.contains(e.target) && e.target !== input) {
+                    panel.style.display = 'none'
+                }
+            })
+
+            form.addEventListener('submit', () => {
+                panel.style.display = 'none'
+            })
+        }
+
+        function initAskDialog() {
+            const dialog = document.getElementById('askDialog')
+            const openBtn = document.getElementById('openAsk')
+            const form = document.getElementById('askForm')
+
+            openBtn.addEventListener('click', async () => {
+                await loadSupabaseConfig()
+                const supabase = await initSupabase()
+                if (!supabase) {
+                    window.location.href = '/login?next=/ask'
+                    return
+                }
+                const { data: { user } } = await supabase.auth.getUser()
+                if (!user) {
+                    window.location.href = '/login?next=/ask'
+                    return
+                }
+                dialog.showModal()
+            })
+            form.addEventListener('reset', () => dialog.close())
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault()
+                const title = document.getElementById('askTitle').value.trim()
+                const body = document.getElementById('askBody').value.trim()
+                const tags = document.getElementById('askTags').value
+                    .split(',')
+                    .map(tag => tag.trim())
+                    .filter(Boolean)
+
+                if (!title) {
+                    alert('Title is required')
+                    return
+                }
+
+                try {
+                    const res = await fetch('/api/qna', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ title, body, tags })
+                    })
+                    if (res.status === 401) {
+                        window.location.href = `/login?next=${encodeURIComponent('/ask')}`
+                        return
+                    }
+                    if (!res.ok) throw new Error()
+                    alert('Question posted! We\'ll get back to you soon.')
+                    form.reset()
+                    dialog.close()
+                } catch (err) {
+                    console.error(err)
+                    alert('Failed to post question. Please try again later.')
+                }
+            })
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderAvatar()
+            initAppsGrid()
+            initSearch()
+            initAskDialog()
+        })
+    </script>
+</body>
+</html>
