@@ -95,7 +95,7 @@ export default function AppsGrid({}: AppsGridProps) {
       document.removeEventListener('mousedown', handleClickOutside)
       document.removeEventListener('keydown', handleEscape)
     }
-  }, [onClose])
+  }, [open])
 
   return (
     <div className="apps-root" ref={panelRef}>
